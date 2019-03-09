@@ -1,42 +1,38 @@
 import React from 'react';
 import {inject, observer} from 'mobx-react';
-import { Table, Button, Modal, Form } from 'semantic-ui-react';
+import { Table, Button } from 'semantic-ui-react';
 
+import ModalComponent from './ModalComponent';
 
 @inject('EmployeeStore')
 @observer
 class TableComponent extends React.Component {
   state = {
-    name: '',
-    department: '',
-    salary: '',
-    insurance: '',
-    modalOpen: false
+    modalAddOpen: false,
+    modalEditOpen: false
   }
 
-  handleChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
-
-  handleModalOpen = () => {
-    this.setState({ modalOpen: true });
-  }
-
-  handleModalClose = () => {
-    this.setState({ modalOpen: false });
-  }
-
-  handleButtonSubmit = (e) => {
-    e.preventDefault();
-    const { name, department, salary, insurance } = this.state;
-    this.props.EmployeeStore.addEmployee({name, department, salary, insurance});
-    this.handleModalClose();
+  handleCloseAllModals = () => {
+      this.setState({
+        modalAddOpen: false,
+        modalEditOpen: false
+       });
   }
 
   handleClear = () => {
     this.props.EmployeeStore.clearEmployeeList();
+  }
+
+  handleDelete = (index) => {
+    this.props.EmployeeStore.deleteEmployee(index);
+  }
+
+  handleModalOpen = () => {
+    this.setState({ modalAddOpen: true });
+  }
+
+  handleEditModalOpen = () => {
+    this.setState({ modalEditOpen: true });
   }
 
   render() {
@@ -48,6 +44,7 @@ class TableComponent extends React.Component {
             <Table.HeaderCell>Department</Table.HeaderCell>
             <Table.HeaderCell>Salary</Table.HeaderCell>
             <Table.HeaderCell>Insured</Table.HeaderCell>
+            <Table.HeaderCell colSpan="2"></Table.HeaderCell>
           </Table.Row>
         </Table.Header>
 
@@ -58,8 +55,26 @@ class TableComponent extends React.Component {
               <Table.Row key={Math.random()}>
                 <Table.Cell singleLine>{employee.name}</Table.Cell>
                 <Table.Cell>{employee.department}</Table.Cell>
-                <Table.Cell>{employee.salary}</Table.Cell>
+                <Table.Cell>{employee.salary}$</Table.Cell>
                 <Table.Cell>{employee.insurance}</Table.Cell>
+                <Table.Cell>
+                <ModalComponent
+                  trigger={<Button basic color='blue'onClick={this.handleEditModalOpen}>Edit</Button>}
+                  key={1}
+                  handleCloseAllModals={this.handleCloseAllModals}
+                  modalEditOpen={this.state.modalEditOpen}
+                  index={this.props.EmployeeStore.employeeList.indexOf(employee)}
+                  EmployeeStore={this.props.EmployeeStore}
+                />
+
+                </Table.Cell>
+                <Table.Cell>
+                  <Button
+                    basic color='red'
+                    onClick={() => this.handleDelete(this.props.EmployeeStore.employeeList.indexOf(employee))}>
+                    Delete
+                  </Button>
+                </Table.Cell>
               </Table.Row>
             )
           })
@@ -68,37 +83,19 @@ class TableComponent extends React.Component {
 
         <Table.Footer fullWidth>
           <Table.Row>
-            <Table.HeaderCell colSpan='4'>
-              <Modal
+            <Table.HeaderCell colSpan='6'>
+
+              <ModalComponent
+                key={2}
+                modalAddOpen={this.state.modalAddOpen}
+                handleCloseAllModals={this.handleCloseAllModals}
                 trigger={<Button size='small' onClick={this.handleModalOpen}>Add</Button>}
-                open={this.state.modalOpen}
-                onClose={this.handleModalClose}>
-                <Modal.Header>Add an employee</Modal.Header>
-                <Modal.Content>
-                  <Modal.Description>
-                    <Form>
-                      <Form.Field>
-                        <label>Name</label>
-                        <input placeholder='Enter name...' type="text" name="name" onChange={this.handleChange} />
-                      </Form.Field>
-                      <Form.Field>
-                      <label>Department</label>
-                      <input placeholder='Enter department...' type="text" name="department" onChange={this.handleChange} />
-                      </Form.Field>
-                      <Form.Field>
-                      <label>Salary</label>
-                      <input placeholder='Enter salary...' type="number" name="salary" onChange={this.handleChange} />
-                      </Form.Field>
-                      <Form.Field>
-                      <label>Insurance Status</label>
-                      <input placeholder='Enter insurance status...' type="text" name="insurance" onChange={this.handleChange} />
-                      </Form.Field>
-                      <Button type='submit' onClick={this.handleButtonSubmit}>Submit</Button>
-                    </Form>
-                  </Modal.Description>
-                </Modal.Content>
-              </Modal>
+                onClick={this.handleButtonSubmit}
+                EmployeeStore={this.props.EmployeeStore}
+              />
+
               <Button size='small' onClick={this.handleClear}>Clear All</Button>
+
             </Table.HeaderCell>
           </Table.Row>
         </Table.Footer>
