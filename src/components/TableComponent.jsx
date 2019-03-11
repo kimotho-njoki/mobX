@@ -8,15 +8,20 @@ import ModalComponent from './ModalComponent';
 @observer
 class TableComponent extends React.Component {
   state = {
-    modalAddOpen: false,
-    modalEditOpen: false
+    modalOpenAdd: false,
+    modalOpenEdit: false
   }
 
-  handleCloseAllModals = () => {
+  handleAddModal = () => {
       this.setState({
-        modalAddOpen: false,
-        modalEditOpen: false
-       });
+        modalOpenAdd: !this.state.modalOpenAdd
+      });
+  }
+
+  handleEditModal = () => {
+      this.setState({
+        modalOpenEdit: !this.state.modalOpenEdit
+      });
   }
 
   handleClear = () => {
@@ -25,14 +30,6 @@ class TableComponent extends React.Component {
 
   handleDelete = (index) => {
     this.props.EmployeeStore.deleteEmployee(index);
-  }
-
-  handleModalOpen = () => {
-    this.setState({ modalAddOpen: true });
-  }
-
-  handleEditModalOpen = () => {
-    this.setState({ modalEditOpen: true });
   }
 
   render() {
@@ -59,14 +56,12 @@ class TableComponent extends React.Component {
                 <Table.Cell>{employee.insurance}</Table.Cell>
                 <Table.Cell>
                 <ModalComponent
-                  trigger={<Button basic color='blue'onClick={this.handleEditModalOpen}>Edit</Button>}
-                  key={1}
-                  handleCloseAllModals={this.handleCloseAllModals}
-                  modalEditOpen={this.state.modalEditOpen}
+                  trigger={<Button basic color='blue' onClick={this.handleEditModal}>Edit</Button>}
+                  handleEditModal={this.handleEditModal}
+                  modalEditOpen={this.state.modalOpenEdit}
                   index={this.props.EmployeeStore.employeeList.indexOf(employee)}
                   EmployeeStore={this.props.EmployeeStore}
                 />
-
                 </Table.Cell>
                 <Table.Cell>
                   <Button
@@ -84,18 +79,13 @@ class TableComponent extends React.Component {
         <Table.Footer fullWidth>
           <Table.Row>
             <Table.HeaderCell colSpan='6'>
-
               <ModalComponent
-                key={2}
-                modalAddOpen={this.state.modalAddOpen}
-                handleCloseAllModals={this.handleCloseAllModals}
-                trigger={<Button size='small' onClick={this.handleModalOpen}>Add</Button>}
-                onClick={this.handleButtonSubmit}
+                trigger={<Button size='small' onClick={this.handleAddModal}>Add</Button>}
+                handleAddModal={this.handleAddModal}
+                modalAddOpen={this.state.modalOpenAdd}
                 EmployeeStore={this.props.EmployeeStore}
               />
-
               <Button size='small' onClick={this.handleClear}>Clear All</Button>
-
             </Table.HeaderCell>
           </Table.Row>
         </Table.Footer>

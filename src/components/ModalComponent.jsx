@@ -15,17 +15,17 @@ class ModalComponent extends React.Component {
     });
   }
 
-  handleButtonSubmit = (e) => {
+  handleAdd = (e) => {
     e.preventDefault();
     const { name, department, salary, insurance } = this.state;
     this.props.EmployeeStore.addEmployee({name, department, salary, insurance});
-    this.props.handleCloseAllModals()
+    this.props.handleAddModal()
   }
 
   handleUpdate = (index) => {
     const { name, department, salary, insurance } = this.state;
     this.props.EmployeeStore.editEmployee(index, {name, department, salary, insurance});
-    this.props.handleCloseAllModals()
+    this.props.handleEditModal()
   }
 
   render() {
@@ -33,7 +33,7 @@ class ModalComponent extends React.Component {
       <Modal
         trigger={this.props.trigger}
         open={ this.props.modalEditOpen || this.props.modalAddOpen}
-        onClose={this.props.isEdit ? this.props.handleEditModalClose : this.props.handleModalClose}>
+        onClose={this.props.handleEditModal || this.props.handleAddModal}>
         <Modal.Header>Employee Details</Modal.Header>
         <Modal.Content>
           <Modal.Description>
@@ -56,7 +56,7 @@ class ModalComponent extends React.Component {
               </Form.Field>
               <Button
                 type='submit'
-                onClick={this.props.modalEditOpen ? () => this.handleUpdate(this.props.index) : this.handleButtonSubmit}>
+                onClick={this.props.modalEditOpen ? () => this.handleUpdate(this.props.index) : this.handleAdd}>
                 Submit
               </Button>
             </Form>
