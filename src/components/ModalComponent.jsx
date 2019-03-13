@@ -1,62 +1,75 @@
 import React from 'react';
+import { observer, inject } from 'mobx-react';
 import { Button, Form, Modal } from 'semantic-ui-react';
 
+@inject ('EmployeeStore')
+@observer
 class ModalComponent extends React.Component {
-  state = {
-    name: '',
-    department: '',
-    salary: '',
-    insurance: '',
-  }
-
-  handleChange = (e) => {
-    this.setState({
-      [e.target.name]: e.target.value
-    });
-  }
-
   handleAdd = (e) => {
     e.preventDefault();
-    const { name, department, salary, insurance } = this.state;
-    this.props.EmployeeStore.addEmployee({name, department, salary, insurance});
-    this.props.handleAddModal()
+    this.props.EmployeeStore.addEmployee();
+    this.props.EmployeeStore.handleAddModal();
   }
 
   handleUpdate = (index) => {
-    const { name, department, salary, insurance } = this.state;
-    this.props.EmployeeStore.editEmployee(index, {name, department, salary, insurance});
-    this.props.handleEditModal()
+    this.props.EmployeeStore.editEmployee(index);
+    this.props.EmployeeStore.handleEditModal();
   }
 
   render() {
+    const { index, trigger,  EmployeeStore } = this.props;
     return (
       <Modal
-        trigger={this.props.trigger}
-        open={ this.props.modalEditOpen || this.props.modalAddOpen}
-        onClose={this.props.handleEditModal || this.props.handleAddModal}>
+        trigger={trigger}
+        open={EmployeeStore.modalOpenEdit || EmployeeStore.modalOpenAdd}
+        onClose={EmployeeStore.handleEditModal || EmployeeStore.handleAddModal}>
         <Modal.Header>Employee Details</Modal.Header>
         <Modal.Content>
           <Modal.Description>
             <Form>
               <Form.Field>
                 <label>Name</label>
-                <input placeholder='Enter name...' type="text" name="name" onChange={this.handleChange} />
+                <input
+                  placeholder='Enter name...'
+                  type="text"
+                  value={EmployeeStore.name}
+                  name="name"
+                  onChange={EmployeeStore.onChange}
+                />
               </Form.Field>
               <Form.Field>
-              <label>Department</label>
-              <input placeholder='Enter department...' type="text" name="department" onChange={this.handleChange} />
+                <label>Department</label>
+                <input
+                  placeholder='Enter department...'
+                  type="text"
+                  value={EmployeeStore.department}
+                  name="department"
+                  onChange={EmployeeStore.onChange}
+                />
               </Form.Field>
               <Form.Field>
-              <label>Salary</label>
-              <input placeholder='Enter salary...' type="number" name="salary" onChange={this.handleChange} />
+                <label>Salary</label>
+                <input
+                  placeholder='Enter salary...'
+                  type="number"
+                  value={EmployeeStore.salary}
+                  name="salary"
+                  onChange={EmployeeStore.onChange}
+                />
               </Form.Field>
               <Form.Field>
-              <label>Insurance Status</label>
-              <input placeholder='Enter insurance status...' type="text" name="insurance" onChange={this.handleChange} />
+                <label>Insurance Status</label>
+                <input
+                  placeholder='Enter insurance status...'
+                  type="text"
+                  value={EmployeeStore.insurance}
+                  name="insurance"
+                  onChange={EmployeeStore.onChange}
+                />
               </Form.Field>
               <Button
                 type='submit'
-                onClick={this.props.modalEditOpen ? () => this.handleUpdate(this.props.index) : this.handleAdd}>
+                onClick={EmployeeStore.modalOpenEdit ? () => this.handleUpdate(index) : this.handleAdd}>
                 Submit
               </Button>
             </Form>

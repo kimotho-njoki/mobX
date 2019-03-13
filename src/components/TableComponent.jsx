@@ -7,23 +7,6 @@ import ModalComponent from './ModalComponent';
 @inject('EmployeeStore')
 @observer
 class TableComponent extends React.Component {
-  state = {
-    modalOpenAdd: false,
-    modalOpenEdit: false
-  }
-
-  handleAddModal = () => {
-      this.setState({
-        modalOpenAdd: !this.state.modalOpenAdd
-      });
-  }
-
-  handleEditModal = () => {
-      this.setState({
-        modalOpenEdit: !this.state.modalOpenEdit
-      });
-  }
-
   handleClear = () => {
     this.props.EmployeeStore.clearEmployeeList();
   }
@@ -56,11 +39,9 @@ class TableComponent extends React.Component {
                 <Table.Cell>{employee.insurance}</Table.Cell>
                 <Table.Cell>
                 <ModalComponent
-                  trigger={<Button basic color='blue' onClick={this.handleEditModal}>Edit</Button>}
-                  handleEditModal={this.handleEditModal}
-                  modalEditOpen={this.state.modalOpenEdit}
+                  trigger={<Button basic color='blue' onClick={this.props.EmployeeStore.handleEditModal}>Edit</Button>}
                   index={this.props.EmployeeStore.employeeList.indexOf(employee)}
-                  EmployeeStore={this.props.EmployeeStore}
+                  onClick={this.props.EmployeeStore.setCurrentEmployee(employee)}
                 />
                 </Table.Cell>
                 <Table.Cell>
@@ -80,10 +61,7 @@ class TableComponent extends React.Component {
           <Table.Row>
             <Table.HeaderCell colSpan='6'>
               <ModalComponent
-                trigger={<Button size='small' onClick={this.handleAddModal}>Add</Button>}
-                handleAddModal={this.handleAddModal}
-                modalAddOpen={this.state.modalOpenAdd}
-                EmployeeStore={this.props.EmployeeStore}
+                trigger={<Button size='small' onClick={this.props.EmployeeStore.handleAddModal}>Add</Button>}
               />
               <Button size='small' onClick={this.handleClear}>Clear All</Button>
             </Table.HeaderCell>
